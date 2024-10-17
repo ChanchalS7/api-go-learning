@@ -16,7 +16,8 @@ type App struct{
 	DB 			*sql.DB
 }
 
-func (app *App) Initialise() error{
+func (app *App) Initialise(DBUser string, 
+	DBPassword string, DBNAME string) error{
 // Create the connection string
 connectionString := fmt.Sprintf("%v:%v@tcp(127.0.0.1:3306)/%v", DBUser, DBPassword, DBNAME)
 var err error

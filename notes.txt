@@ -1,0 +1,30 @@
+// Get a single product by ID
+func getProduct(w http.ResponseWriter, r *http.Request) {
+	log.Println("Endpoint hit: getProduct")
+	w.Header().Set("Content-Type", "application/json")
+
+	// Extract the product ID from the URL
+	pathParts := strings.Split(r.URL.Path, "/")
+	if len(pathParts) < 3 {
+		http.Error(w, "Invalid product ID", http.StatusBadRequest)
+		return
+	}
+
+	// Convert the ID from string to int
+	productId, err := strconv.Atoi(pathParts[2])
+	if err != nil {
+		http.Error(w, "Invalid product ID", http.StatusBadRequest)
+		return
+	}
+
+	// Find the product by ID
+	for _, product := range Products {
+		if product.Id == productId {
+			json.NewEncoder(w).Encode(product)
+			return
+		}
+	}
+
+	// If the product is not found, return a 404 status
+	http.Error(w, "Product not found", http.StatusNotFound)
+}

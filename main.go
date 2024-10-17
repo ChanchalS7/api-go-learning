@@ -43,9 +43,15 @@ import (
 - Create some product
 - Create handleRequests() method which have all the routes
 - Write returnAllProducts() method which return all products
+- Write getProduct() method which return single product
+- Convert the id type from int to string
+- test get-all and get single product
+- Now use gorilla/mux router library
+
+
 */
 type Product struct{
-	Id 			int
+	Id 			string
 	Name 		string 
 	Quantity 	int 
 	Price 		float64
@@ -63,10 +69,20 @@ func returnAllProducts( w http.ResponseWriter, r *http.Request){
 	w.Header().Set("Content-Type","application/json")
 	json.NewEncoder(w).Encode(Products)
 }
+func getProduct(w http.ResponseWriter, r *http.Request){
+fmt.Println(r.URL.Path)
+key:=r.URL.Path[len("/product/"):]
+for _,product:=range Products{
+	if (product.Id)==key{
+		json.NewEncoder(w).Encode(product)
+	}
+}
+}
 func handleRequests(){
 	// Log a message that the server is starting
     log.Println("Server is starting on http://localhost:10000")
 	http.HandleFunc("/products",returnAllProducts)
+	http.HandleFunc("/product/",getProduct)
 	http.HandleFunc("/",homepage)
 	log.Fatal(http.ListenAndServe("localhost:10000",nil))
 
@@ -74,8 +90,8 @@ func handleRequests(){
 func main(){
 	//product slice
 	Products = []Product{
-		Product{Id:1, Name:"Chair", Quantity:100, Price:100.00},
-		Product{Id:2, Name:"Desk", Quantity:200,Price:200.00},
+		Product{Id:"1", Name:"Chair", Quantity:100, Price:100.00},
+		Product{Id:"2", Name:"Desk", Quantity:200,Price:200.00},
 	}
 	//call handleRequest method
 	handleRequests()

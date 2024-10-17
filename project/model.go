@@ -99,3 +99,9 @@ func (p *product) updateProduct(db *sql.DB) error{
 }
 
 
+//DELETE PRODUCT
+func (p *product) deleteProduct(db *sql.DB) error{
+	query:= "DELETE FROM products WHERE id=?"
+	_,err:=db.Exec(query,p.ID)
+	return err
+}

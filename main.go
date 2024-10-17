@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"encoding/json"
+	"github.com/gorilla/mux"
 )
 //1.Create web server
 //2. HTTP Verbs
@@ -70,21 +71,31 @@ func returnAllProducts( w http.ResponseWriter, r *http.Request){
 	json.NewEncoder(w).Encode(Products)
 }
 func getProduct(w http.ResponseWriter, r *http.Request){
-fmt.Println(r.URL.Path)
-key:=r.URL.Path[len("/product/"):]
+// fmt.Println(r.URL.Path)
+// key:=r.URL.Path[len("/product/"):]
+// for _,product:=range Products{
+// 	if (product.Id)==key{
+// 		json.NewEncoder(w).Encode(product)
+// 	}
+// }
+vars:=mux.Vars(r)
+key:=vars["id"]
 for _,product:=range Products{
 	if (product.Id)==key{
 		json.NewEncoder(w).Encode(product)
 	}
+
 }
+
 }
 func handleRequests(){
+	myRouter:=mux.NewRouter().StrictSlash(true)
 	// Log a message that the server is starting
     log.Println("Server is starting on http://localhost:10000")
-	http.HandleFunc("/products",returnAllProducts)
-	http.HandleFunc("/product/",getProduct)
-	http.HandleFunc("/",homepage)
-	log.Fatal(http.ListenAndServe("localhost:10000",nil))
+	myRouter.HandleFunc("/products",returnAllProducts)
+	myRouter.HandleFunc("/product/{id}",getProduct)
+	myRouter.HandleFunc("/",homepage)
+	log.Fatal(http.ListenAndServe("localhost:10000",myRouter))
 
 }
 func main(){

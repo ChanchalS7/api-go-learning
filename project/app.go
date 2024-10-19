@@ -94,11 +94,13 @@ func (app *App) createProduct(w http.ResponseWriter, r *http.Request) {
 	err:= json.NewDecoder(r.Body).Decode(&p)
 
 	if err!=nil{
+		log.Println("Error decoding request body:",err)
 		sendError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
 	err = p.createProduct(app.DB)
 	if err!=nil{
+		log.Println("Error inserting product into database:",err)
 		sendError(w, http.StatusInternalServerError, "Failed to create product")
 		return 
 	}

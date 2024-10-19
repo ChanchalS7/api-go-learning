@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -68,4 +69,19 @@ func sendRequest(request *http.Request) *httptest.ResponseRecorder{
 	recorder:=httptest.NewRecorder()
 	a.Router.ServeHTTP(recorder, request)
 	return recorder
+}
+
+
+func TestCreateProduct(t *testing.T) {
+    clearTable()
+    var product = []byte(`{"name":"chair","quantity":1,"price":100}`)
+    req, _ := http.NewRequest("POST", "/product", bytes.NewBuffer(product))
+    req.Header.Set("Content-Type", "application/json")
+
+    response := sendRequest(req)
+    checkStatusCode(t, http.StatusCreated, response.Code)
+
+    // if response.Code != http.StatusCreated {
+    //     t.Errorf("Expected status code 201 but got %v. Response body: %s", response.Code, response.Body.String())
+    // }
 }

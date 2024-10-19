@@ -1,5 +1,5 @@
 # Inventory Management System - REST API
-
+## Go inside project directory - first step
 This project is an example of a simple inventory management system built with Go, MySQL, and Gorilla Mux for routing. It includes endpoints for CRUD operations on product data.
 
 ## Prerequisites

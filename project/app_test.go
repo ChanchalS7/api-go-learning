@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -84,4 +85,41 @@ func TestCreateProduct(t *testing.T) {
     // if response.Code != http.StatusCreated {
     //     t.Errorf("Expected status code 201 but got %v. Response body: %s", response.Code, response.Body.String())
     // }
+
+		//unmarshal json response
+	var m map[string]interface{}
+	json.Unmarshal(response.Body.Bytes(),&m)
+
+	if m["name"] != "chair"{
+		t.Errorf("Expected name:%v,Got :%v","chair",m["name"])
+	}
+	if m["quantity"]!=1.0{
+		t.Errorf("Expected quantity:%v,Got:%v",1.0,m["quantity"])
+	}
+}
+
+func TestDeleteProduct(t *testing.T) {
+    clearTable()
+
+    // Add a product to be deleted
+    addProduct("connector", 10, 10)
+
+    // Step 1: Check if the product exists
+    req, _ := http.NewRequest("GET", "/product/1", nil)
+    response := sendRequest(req)
+    checkStatusCode(t, http.StatusOK, response.Code)
+
+    // Step 2: Send DELETE request to delete the product
+    req, _ = http.NewRequest("DELETE", "/product/1", nil)
+    response = sendRequest(req)
+    checkStatusCode(t, http.StatusOK, response.Code)  // Expect 200 OK for successful deletion
+
+    // Step 3: Check if the product is gone
+    req, _ = http.NewRequest("GET", "/product/1", nil)
+    response = sendRequest(req)
+    checkStatusCode(t, http.StatusNotFound, response.Code)  // Expect 404 Not Found after deletion
+}
+
+func TestUpdateProduct(t *testing.T){
+	clearTable()
 }

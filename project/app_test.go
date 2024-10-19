@@ -120,6 +120,36 @@ func TestDeleteProduct(t *testing.T) {
     checkStatusCode(t, http.StatusNotFound, response.Code)  // Expect 404 Not Found after deletion
 }
 
-func TestUpdateProduct(t *testing.T){
-	clearTable()
+func TestUpdateProduct(t *testing.T) {
+    clearTable()
+
+    // Add the initial product
+    addProduct("connector", 10, 10)
+
+    // Step 1: Send PUT request to update the product
+    var product = []byte(`{"name":"connector_updated","quantity":5,"price":20}`)
+    req, _ := http.NewRequest("PUT", "/product/1", bytes.NewBuffer(product))
+    req.Header.Set("Content-Type", "application/json")
+
+    response := sendRequest(req)
+
+    // Step 2: Check the status code of the update operation
+    checkStatusCode(t, http.StatusOK, response.Code)
+
+    // Step 3: Unmarshal response and verify the updated values
+    var updatedValue map[string]interface{}
+    json.Unmarshal(response.Body.Bytes(), &updatedValue)
+
+    if updatedValue["id"] != float64(1) { // JSON unmarshalling converts numbers to float64 by default
+        t.Errorf("Expected id: %v, Got: %v", 1, updatedValue["id"])
+    }
+    if updatedValue["name"] != "connector_updated" {
+        t.Errorf("Expected name: %v, Got: %v", "connector_updated", updatedValue["name"])
+    }
+    if updatedValue["price"] != 20.0 {
+        t.Errorf("Expected price: %v, Got: %v", 20.0, updatedValue["price"])
+    }
+    if updatedValue["quantity"] != 5.0 {
+        t.Errorf("Expected quantity: %v, Got: %v", 5.0, updatedValue["quantity"])
+    }
 }
